@@ -1,0 +1,25 @@
+{
+  "name": "Pocket Survivor",
+  "short_name": "PocketSurvivor",
+  "description": "Smart College Expense Manager",
+  "theme_color": "#FF6348",
+  "background_color": "#FFF9F5",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
