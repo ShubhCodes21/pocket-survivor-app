@@ -183,7 +183,7 @@ function AuthScreen({ onAuth }) {
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
       <div style={{ position: "relative", marginBottom: 12 }}>
         <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...is, paddingRight: 44 }} />
-        <button className="bb" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", color: C.mut, padding: 4 }}>
+        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.mut, padding: 4 }}>
           {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
@@ -208,7 +208,7 @@ function AuthScreen({ onAuth }) {
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
       <div style={{ position: "relative", marginBottom: 20 }}>
         <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (6+ characters)" style={{ ...is, paddingRight: 44 }} />
-        <button className="bb" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", color: C.mut, padding: 4 }}>
+        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.mut, padding: 4 }}>
           {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
