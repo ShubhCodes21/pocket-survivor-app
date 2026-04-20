@@ -9,7 +9,8 @@ import {
   Target, ChevronRight, ChevronLeft, Plus, Star, Flame, Award,
   Coffee, Bus, UtensilsCrossed, ShoppingBag, Gamepad2, IceCream,
   BookOpen, Zap, Moon, Sun, Sunset, CloudSun, X, Check, Trash2,
-  ArrowRight, Sparkles, PiggyBank, Receipt, BarChart3, Home, Settings, LogOut
+  ArrowRight, Sparkles, PiggyBank, Receipt, BarChart3, Home, Settings, LogOut,
+  Eye, EyeOff
 } from "lucide-react";
 import {
   PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
@@ -103,6 +104,7 @@ function AuthScreen({ onAuth }) {
   const [personality, setPersonality] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   const handleLogin = async () => {
     setError(""); setLoading(true);
@@ -148,7 +150,12 @@ function AuthScreen({ onAuth }) {
       <p style={{ color: C.mut, marginBottom: 32 }}>Log in to continue surviving.</p>
       {error && <p style={{ color: C.danger, marginBottom: 12, fontSize: 14 }}>{error}</p>}
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...is, marginBottom: 20 }} />
+      <div style={{ position: "relative", marginBottom: 20 }}>
+        <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...is, paddingRight: 44 }} />
+        <button className="bb" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", color: C.mut, padding: 4 }}>
+          {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </div>
       <button className="bb" onClick={handleLogin} disabled={loading} style={{ background: email && password ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Logging in..." : "Log In"}
       </button>
@@ -165,7 +172,12 @@ function AuthScreen({ onAuth }) {
       {error && <p style={{ color: C.danger, marginBottom: 12, fontSize: 14 }}>{error}</p>}
       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={{ ...is, marginBottom: 12 }} />
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (6+ characters)" style={{ ...is, marginBottom: 20 }} />
+      <div style={{ position: "relative", marginBottom: 20 }}>
+        <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (6+ characters)" style={{ ...is, paddingRight: 44 }} />
+        <button className="bb" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", color: C.mut, padding: 4 }}>
+          {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </div>
 
       <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600, marginTop: 16 }}>STEP 2: Monthly pocket money</p>
       <div style={{ textAlign: "center", marginBottom: 16 }}>

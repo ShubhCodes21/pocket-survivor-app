@@ -67,6 +67,14 @@ export async function login(email, password) {
   return data;
 }
 
+export async function forgotPassword(email) {
+  return request('POST', '/auth/forgot-password', { email });
+}
+
+export async function resetPassword(email, token, newPassword) {
+  return request('POST', '/auth/reset-password', { email, token, newPassword });
+}
+
 export function getCachedUser() {
   try {
     return JSON.parse(localStorage.getItem('ps-user'));
