@@ -96,7 +96,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 
 // ━━━ AUTH SCREENS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function AuthScreen({ onAuth }) {
-  const [mode, setMode] = useState("welcome"); // welcome, login, register, personality
+  const [mode, setMode] = useState("welcome"); // welcome, login, register, personality, forgot, reset, reset-success
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -105,6 +105,17 @@ function AuthScreen({ onAuth }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [resetMsg, setResetMsg] = useState("");
+
+  const errBox = error ? (
+    <div style={{ background: "#FFF0F0", border: `1px solid ${C.danger}`, borderRadius: 12, padding: "12px 16px", marginBottom: 16 }}>
+      <p style={{ color: C.danger, fontSize: 14, fontWeight: 600, margin: 0 }}>{error}</p>
+    </div>
+  ) : null;
 
   const handleLogin = async () => {
     setError(""); setLoading(true);
@@ -121,6 +132,27 @@ function AuthScreen({ onAuth }) {
     try {
       const data = await api.register(email, password, name, personality, budget);
       onAuth(data.user);
+    } catch (e) { setError(e.message); }
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    setError(""); setLoading(true);
+    try {
+      await api.forgotPassword(resetEmail);
+      setResetMsg("If this email exists, a reset code has been sent. Check your console/email.");
+      setMode("reset");
+    } catch (e) { setError(e.message); }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    if (newPw !== confirmPw) { setError("Passwords do not match."); return; }
+    if (newPw.length < 6) { setError("Password must be at least 6 characters."); return; }
+    setError(""); setLoading(true);
+    try {
+      await api.resetPassword(resetEmail, resetCode, newPw);
+      setMode("reset-success");
     } catch (e) { setError(e.message); }
     setLoading(false);
   };
@@ -148,16 +180,19 @@ function AuthScreen({ onAuth }) {
       </button>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Welcome back</h2>
       <p style={{ color: C.mut, marginBottom: 32 }}>Log in to continue surviving.</p>
-      {error && <p style={{ color: C.danger, marginBottom: 12, fontSize: 14 }}>{error}</p>}
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
-      <div style={{ position: "relative", marginBottom: 20 }}>
+      <div style={{ position: "relative", marginBottom: 12 }}>
         <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...is, paddingRight: 44 }} />
         <button className="bb" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", color: C.mut, padding: 4 }}>
           {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
+      {errBox}
       <button className="bb" onClick={handleLogin} disabled={loading} style={{ background: email && password ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Logging in..." : "Log In"}
+      </button>
+      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: "none", color: C.mut, padding: "12px", fontSize: 14, fontWeight: 600, width: "100%", marginTop: 4 }}>
+        Forgot password?
       </button>
     </div></div>
   );
@@ -169,7 +204,6 @@ function AuthScreen({ onAuth }) {
       </button>
       <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600 }}>STEP 1 OF 3</p>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Create your account</h2>
-      {error && <p style={{ color: C.danger, marginBottom: 12, fontSize: 14 }}>{error}</p>}
       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={{ ...is, marginBottom: 12 }} />
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
       <div style={{ position: "relative", marginBottom: 20 }}>
@@ -191,10 +225,56 @@ function AuthScreen({ onAuth }) {
         style={{ background: name && email && password.length >= 6 ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%" }}>
         Next: Pick Your Vibe
       </button>
+      {errBox}
     </div></div>
   );
 
-  // Personality selection
+  if (mode === "forgot") return (
+    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => { setError(""); setMode("login"); }} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+        <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
+      </button>
+      <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Forgot password</h2>
+      <p style={{ color: C.mut, marginBottom: 32 }}>Enter your email and we'll send a reset code.</p>
+      <input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 16 }} />
+      {errBox}
+      <button className="bb" onClick={handleForgotPassword} disabled={loading || !resetEmail} style={{ background: resetEmail ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
+        {loading ? "Sending..." : "Send Reset Code"}
+      </button>
+    </div></div>
+  );
+
+  if (mode === "reset") return (
+    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+        <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
+      </button>
+      <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Reset password</h2>
+      {resetMsg && <div style={{ background: "#F0FFF4", border: `1px solid ${C.ok}`, borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
+        <p style={{ color: C.ok, fontSize: 14, fontWeight: 600, margin: 0 }}>{resetMsg}</p>
+      </div>}
+      <input type="text" value={resetCode} onChange={e => setResetCode(e.target.value)} placeholder="Reset Code (6 digits)" maxLength={6} style={{ ...is, marginBottom: 12, letterSpacing: 4, textAlign: "center", fontSize: 20, fontWeight: 700 }} />
+      <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="New Password (6+ characters)" style={{ ...is, marginBottom: 12 }} />
+      <input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="Confirm Password" style={{ ...is, marginBottom: 16 }} />
+      {errBox}
+      <button className="bb" onClick={handleResetPassword} disabled={loading || !resetCode || !newPw || !confirmPw} style={{ background: resetCode && newPw && confirmPw ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
+        {loading ? "Resetting..." : "Reset Password"}
+      </button>
+    </div></div>
+  );
+
+  if (mode === "reset-success") return (
+    <div className="ps"><div className="su" style={{ textAlign: "center", padding: "60px 24px" }}>
+      <div style={{ fontSize: 72, marginBottom: 16 }}>✅</div>
+      <h2 className="dp" style={{ fontSize: 26, marginBottom: 12, color: C.ok }}>Password reset!</h2>
+      <p style={{ color: C.mut, fontSize: 16, marginBottom: 32 }}>You can now log in with your new password.</p>
+      <button className="bb" onClick={() => { setError(""); setResetCode(""); setNewPw(""); setConfirmPw(""); setResetMsg(""); setMode("login"); }} style={{ background: C.pri, color: "#fff", padding: "16px 48px", borderRadius: 50, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", boxShadow: "0 4px 20px rgba(255,99,72,.4)", width: "100%" }}>
+        Back to Log In
+      </button>
+    </div></div>
+  );
+
+  // Personality selection (default fallthrough)
   return (
     <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
       <button className="bb" onClick={() => setMode("register")} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
@@ -203,7 +283,6 @@ function AuthScreen({ onAuth }) {
       <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600 }}>STEP 3 OF 3</p>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>What's your vibe?</h2>
       <p style={{ color: C.mut, marginBottom: 24 }}>This decides how your coach talks to you.</p>
-      {error && <p style={{ color: C.danger, marginBottom: 12, fontSize: 14 }}>{error}</p>}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {Object.entries(PERS).map(([k, p], i) => (
           <button key={k} className="bb be gc" onClick={() => setPersonality(k)} style={{ padding: 20, textAlign: "left", animationDelay: `${i * .1}s`, border: personality === k ? `2px solid ${p.color}` : "2px solid transparent", background: personality === k ? `${p.color}10` : "rgba(255,255,255,.85)" }}>
@@ -219,6 +298,7 @@ function AuthScreen({ onAuth }) {
         style={{ background: personality ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", marginTop: 24, opacity: loading ? 0.7 : 1 }}>
         {loading ? "Creating account..." : "Start Surviving 🚀"}
       </button>
+      {errBox}
     </div></div>
   );
 }
