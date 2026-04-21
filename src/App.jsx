@@ -10,7 +10,7 @@ import {
   Coffee, Bus, UtensilsCrossed, ShoppingBag, Gamepad2, IceCream,
   BookOpen, Zap, Moon, Sun, Sunset, CloudSun, X, Check, Trash2,
   ArrowRight, Sparkles, PiggyBank, Receipt, BarChart3, Home, Settings, LogOut,
-  Eye, EyeOff
+  Eye, EyeOff, Repeat, ToggleLeft, ToggleRight
 } from "lucide-react";
 import {
   PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
@@ -389,10 +389,15 @@ function Nav({ active, go }) {
 function Dash({ user, go, darkMode, toggleDark }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recurCount, setRecurCount] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setData(await api.getDashboard()); } catch (e) { console.error(e); }
+    try {
+      const [dash, recurs] = await Promise.all([api.getDashboard(), api.getRecurring()]);
+      setData(dash);
+      setRecurCount(recurs.filter(r => r.isActive).length);
+    } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
@@ -438,6 +443,11 @@ function Dash({ user, go, darkMode, toggleDark }) {
         </div>
       </div>
     </div>
+
+    {recurCount > 0 && <div className="su fi" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "10px 16px", borderRadius: 12, background: `${C.purp}15`, transition: "background-color .3s" }}>
+      <Repeat size={14} color={C.purp} />
+      <span style={{ fontSize: 13, color: C.purp, fontWeight: 600 }}>{recurCount} recurring expense{recurCount !== 1 ? "s" : ""} auto-logged today</span>
+    </div>}
 
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
       {[
@@ -507,17 +517,36 @@ function Entry({ onDone, darkMode }) {
   const [done, setDone] = useState(false);
   const [cats, setCats] = useState([]);
   const [prices, setPrices] = useState(DEFAULT_PRICES);
+  const [showAddCat, setShowAddCat] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [customCatNames, setCustomCatNames] = useState(new Set());
   const at = curSlot();
 
   const loadSuggestions = async (timeOfDay) => {
     try {
-      const data = await api.getSuggestions(timeOfDay);
-      if (data.categories?.length) setCats(data.categories);
+      const [sugData, userCats] = await Promise.all([
+        api.getSuggestions(timeOfDay),
+        api.getCategories()
+      ]);
+      if (sugData.categories?.length) setCats(sugData.categories);
+      setCustomCatNames(new Set(userCats.map(c => c.name)));
       setPrices(DEFAULT_PRICES);
-      window.__psPriceMap = data.prices || {};
+      window.__psPriceMap = sugData.prices || {};
     } catch {
       setCats(["Breakfast", "Coffee", "Lunch", "Snacks", "Auto", "Dinner", "Other"]);
     }
+  };
+
+  const handleAddCustomCat = async () => {
+    const n = newCatName.trim();
+    if (!n) return;
+    try {
+      await api.createCategory(n, null, time);
+      setCats(prev => [...prev, n]);
+      setCustomCatNames(prev => new Set([...prev, n]));
+      setNewCatName("");
+      setShowAddCat(false);
+    } catch {}
   };
 
   const confirm = async () => {
@@ -572,20 +601,29 @@ function Entry({ onDone, darkMode }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
         {cats.map((c, i) => {
           const Ic = CAT_ICONS[c] || Receipt;
+          const isCustom = customCatNames.has(c);
           return <button key={c} className="bb be" onClick={() => {
             setCat(c);
             const pm = window.__psPriceMap || {};
             if (pm[c]?.length) setPrices(pm[c]);
             else setPrices(DEFAULT_PRICES);
             setStep(2);
-          }} style={{ background: V.inputBg, borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--ps-card-shadow)", animationDelay: `${i * .05}s`, color: V.text, transition: "background-color .3s, color .3s" }}>
-            <Ic size={18} color={C.pri} /><span style={{ fontWeight: 600, fontSize: 15 }}>{c}</span>
+          }} style={{ background: V.inputBg, borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--ps-card-shadow)", animationDelay: `${i * .05}s`, color: V.text, transition: "background-color .3s, color .3s", border: isCustom ? `2px dashed ${C.purp}` : "2px solid transparent" }}>
+            <Ic size={18} color={isCustom ? C.purp : C.pri} /><span style={{ fontWeight: 600, fontSize: 15 }}>{c}</span>
           </button>;
         })}
         <button className="bb be" onClick={() => { setCat("Other"); setStep(2); }} style={{ background: V.hoverBg, borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, transition: "background-color .3s" }}>
           <Plus size={18} color={V.mut} /><span style={{ fontWeight: 600, fontSize: 15, color: V.mut }}>Other</span>
         </button>
+        <button className="bb be" onClick={() => setShowAddCat(true)} style={{ background: "transparent", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, border: `2px dashed ${C.pri}` }}>
+          <Plus size={18} color={C.pri} /><span style={{ fontWeight: 600, fontSize: 15, color: C.pri }}>Add Custom</span>
+        </button>
       </div>
+      {showAddCat && <div className="fi" style={{ display: "flex", gap: 8, marginTop: 16, justifyContent: "center" }}>
+        <input type="text" value={newCatName} onChange={e => setNewCatName(e.target.value)} placeholder="Category name" autoFocus maxLength={50} style={{ ...is, flex: 1, maxWidth: 200 }} onKeyDown={e => e.key === "Enter" && handleAddCustomCat()} />
+        <button className="bb" onClick={handleAddCustomCat} style={{ background: newCatName.trim() ? C.pri : V.border, color: "#fff", borderRadius: 12, padding: "0 16px", fontWeight: 700 }}><Check size={18} /></button>
+        <button className="bb" onClick={() => { setShowAddCat(false); setNewCatName(""); }} style={{ background: V.hoverBg, borderRadius: 12, padding: "0 12px", transition: "background-color .3s" }}><X size={18} color={V.mut} /></button>
+      </div>}
     </div>}
 
     {step === 2 && <div>
@@ -809,6 +847,18 @@ function Sett({ user, onUpdate, onLogout, darkMode, toggleDark }) {
   const [name, setName] = useState(user.name);
   const [bud, setBud] = useState(user.monthlyBudget);
   const [pers, setPers] = useState(user.personality);
+  const [customCats, setCustomCats] = useState([]);
+  const [newCat, setNewCat] = useState("");
+  const [recurs, setRecurs] = useState([]);
+  const [showRecurForm, setShowRecurForm] = useState(false);
+  const [rCat, setRCat] = useState(""); const [rAmt, setRAmt] = useState("");
+  const [rTime, setRTime] = useState("morning"); const [rDays, setRDays] = useState("weekdays");
+  const [rNote, setRNote] = useState("");
+
+  useEffect(() => {
+    api.getCategories().then(setCustomCats).catch(() => {});
+    api.getRecurring().then(setRecurs).catch(() => {});
+  }, []);
 
   const save = async () => {
     try {
@@ -816,6 +866,29 @@ function Sett({ user, onUpdate, onLogout, darkMode, toggleDark }) {
       onUpdate(updated);
     } catch {}
   };
+
+  const addCat = async () => {
+    if (!newCat.trim()) return;
+    try { const c = await api.createCategory(newCat.trim()); setCustomCats(prev => [...prev, c]); setNewCat(""); } catch {}
+  };
+  const delCat = async (id) => { try { await api.deleteCategory(id); setCustomCats(prev => prev.filter(c => c.id !== id)); } catch {} };
+
+  const addRecur = async () => {
+    if (!rCat.trim() || !rAmt) return;
+    try {
+      const r = await api.createRecurring({ category: rCat.trim(), amount: +rAmt, timeOfDay: rTime, daysOfWeek: rDays, note: rNote.trim() || null });
+      setRecurs(prev => [r, ...prev]);
+      setRCat(""); setRAmt(""); setRNote(""); setShowRecurForm(false);
+    } catch {}
+  };
+  const toggleRecur = async (id) => {
+    try { const r = await api.toggleRecurring(id); setRecurs(prev => prev.map(x => x.id === id ? r : x)); } catch {}
+  };
+  const delRecur = async (id) => { try { await api.deleteRecurring(id); setRecurs(prev => prev.filter(x => x.id !== id)); } catch {} };
+
+  const SCHED = [
+    { id: "daily", l: "Daily" }, { id: "weekdays", l: "Weekdays" }, { id: "weekends", l: "Weekends" },
+  ];
 
   return <div className="sp" style={{ padding: "24px 16px" }}>
     <h1 className="dp" style={{ fontSize: 26, marginBottom: 24 }}>Settings ⚙️</h1>
@@ -845,6 +918,70 @@ function Sett({ user, onUpdate, onLogout, darkMode, toggleDark }) {
       </div>
       <button className="bb" onClick={save} style={{ background: C.pri, color: "#fff", padding: 14, borderRadius: 12, width: "100%", fontWeight: 700, fontFamily: "Outfit", fontSize: 15 }}>Save Changes</button>
     </div>
+
+    <div className="gc" style={{ padding: 20, marginBottom: 16 }}>
+      <h3 className="hd" style={{ fontSize: 17, marginBottom: 16 }}>My Categories</h3>
+      {customCats.length === 0 && <p style={{ color: V.mut, fontSize: 14, marginBottom: 12 }}>No custom categories yet.</p>}
+      {customCats.map(c => (
+        <div key={c.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${V.border}`, transition: "border-color .3s" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: `${C.purp}15`, display: "flex", alignItems: "center", justifyContent: "center" }}><Receipt size={14} color={C.purp} /></div>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 14 }}>{c.name}</p>
+              {c.timeOfDay && <p style={{ fontSize: 11, color: V.mut }}>{c.timeOfDay}</p>}
+            </div>
+          </div>
+          <button className="bb" onClick={() => delCat(c.id)} style={{ background: "none", padding: 4, color: V.mut }}><Trash2 size={14} /></button>
+        </div>
+      ))}
+      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+        <input type="text" value={newCat} onChange={e => setNewCat(e.target.value)} placeholder="New category name" maxLength={50} style={{ ...is, flex: 1 }} onKeyDown={e => e.key === "Enter" && addCat()} />
+        <button className="bb" onClick={addCat} style={{ background: newCat.trim() ? C.pri : V.border, color: "#fff", borderRadius: 12, padding: "0 16px", fontWeight: 700 }}><Plus size={18} /></button>
+      </div>
+    </div>
+
+    <div className="gc" style={{ padding: 20, marginBottom: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h3 className="hd" style={{ fontSize: 17 }}>Recurring Expenses</h3>
+        <button className="bb" onClick={() => setShowRecurForm(!showRecurForm)} style={{ background: C.pri, color: "#fff", borderRadius: 50, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {showRecurForm ? <X size={16} /> : <Plus size={16} />}
+        </button>
+      </div>
+
+      {showRecurForm && <div className="fi" style={{ background: V.hoverBg, borderRadius: 16, padding: 16, marginBottom: 16, transition: "background-color .3s" }}>
+        <input type="text" value={rCat} onChange={e => setRCat(e.target.value)} placeholder="Category (e.g. Bus)" maxLength={50} style={{ ...is, marginBottom: 8 }} />
+        <input type="number" value={rAmt} onChange={e => setRAmt(e.target.value)} placeholder="Amount (₹)" style={{ ...is, marginBottom: 8 }} />
+        <label style={{ fontSize: 12, color: V.mut, fontWeight: 600, display: "block", marginBottom: 6 }}>Schedule</label>
+        <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+          {SCHED.map(s => <button key={s.id} className="bb" onClick={() => setRDays(s.id)} style={{ flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 13, fontWeight: 700, border: rDays === s.id ? `2px solid ${C.pri}` : `2px solid ${V.border}`, background: rDays === s.id ? `${C.pri}15` : V.inputBg, color: rDays === s.id ? C.pri : V.mut, transition: "all .2s" }}>{s.l}</button>)}
+        </div>
+        <label style={{ fontSize: 12, color: V.mut, fontWeight: 600, display: "block", marginBottom: 6 }}>Time of Day</label>
+        <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+          {TIMES.map(t => <button key={t.id} className="bb" onClick={() => setRTime(t.id)} style={{ flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 12, fontWeight: 700, border: rTime === t.id ? `2px solid ${t.color}` : `2px solid ${V.border}`, background: rTime === t.id ? `${t.color}15` : V.inputBg, color: rTime === t.id ? t.color : V.mut, transition: "all .2s" }}>{t.label.slice(0, 4)}</button>)}
+        </div>
+        <input type="text" value={rNote} onChange={e => setRNote(e.target.value)} placeholder="Note (optional)" maxLength={255} style={{ ...is, marginBottom: 10 }} />
+        <button className="bb" onClick={addRecur} style={{ background: rCat.trim() && rAmt ? C.pri : V.border, color: "#fff", padding: 12, borderRadius: 12, width: "100%", fontWeight: 700, fontFamily: "Outfit" }}>Add Recurring</button>
+      </div>}
+
+      {recurs.length === 0 && !showRecurForm && <p style={{ color: V.mut, fontSize: 14 }}>No recurring expenses set up.</p>}
+
+      {recurs.map(r => (
+        <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 0", borderBottom: `1px solid ${V.border}`, transition: "border-color .3s", opacity: r.isActive ? 1 : 0.5 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.pri}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Repeat size={16} color={C.pri} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontWeight: 600, fontSize: 14 }}>{r.category} — ₹{r.amount}</p>
+            <p style={{ fontSize: 12, color: V.mut }}>{r.daysOfWeek} • {r.timeOfDay}{r.note ? ` • ${r.note}` : ""}</p>
+          </div>
+          <button className="bb" onClick={() => toggleRecur(r.id)} style={{ background: "none", padding: 4, color: r.isActive ? C.ok : V.mut }}>
+            {r.isActive ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
+          </button>
+          <button className="bb" onClick={() => delRecur(r.id)} style={{ background: "none", padding: 4, color: V.mut }}><Trash2 size={14} /></button>
+        </div>
+      ))}
+    </div>
+
     <button className="bb" onClick={onLogout} style={{ background: `${C.danger}15`, color: C.danger, padding: 14, borderRadius: 12, width: "100%", fontWeight: 700, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
       <LogOut size={18} /> Log Out
     </button>

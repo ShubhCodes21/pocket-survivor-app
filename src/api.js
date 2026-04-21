@@ -148,6 +148,36 @@ export async function getSuggestions(timeOfDay) {
   return request('GET', `/suggestions/${timeOfDay}`);
 }
 
+// ── CUSTOM CATEGORIES ──────────────────────────────────────────
+export async function getCategories() {
+  return request('GET', '/categories');
+}
+
+export async function createCategory(name, icon, timeOfDay) {
+  return request('POST', '/categories', { name, icon: icon || null, timeOfDay: timeOfDay || null });
+}
+
+export async function deleteCategory(id) {
+  return request('DELETE', `/categories/${id}`);
+}
+
+// ── RECURRING EXPENSES ─────────────────────────────────────────
+export async function getRecurring() {
+  return request('GET', '/recurring');
+}
+
+export async function createRecurring(data) {
+  return request('POST', '/recurring', data);
+}
+
+export async function toggleRecurring(id) {
+  return request('PATCH', `/recurring/${id}/toggle`);
+}
+
+export async function deleteRecurring(id) {
+  return request('DELETE', `/recurring/${id}`);
+}
+
 // ── HEALTH ──────────────────────────────────────────────────────
 export async function checkHealth() {
   try {
