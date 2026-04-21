@@ -24,6 +24,19 @@ const C = {
   mut: "#8395A7", lite: "#FFF0EB",
 };
 
+const V = {
+  bg: "var(--ps-bg)",
+  text: "var(--ps-text)",
+  mut: "var(--ps-muted)",
+  lite: "var(--ps-lite)",
+  inputBg: "var(--ps-input-bg)",
+  hoverBg: "var(--ps-hover-bg)",
+  border: "var(--ps-border)",
+  cardBg: "var(--ps-card-bg)",
+  navBg: "var(--ps-nav-bg)",
+  progressBg: "var(--ps-progress-bg)",
+};
+
 const PERS = {
   spender:  { label: "Spender",  emoji: "🔥", color: "#FF6348", desc: "You love treating yourself. I'll keep you in check with savage honesty." },
   balanced: { label: "Balanced", emoji: "⚖️", color: "#A29BFE", desc: "You're practical. I'll give you straightforward, no-nonsense advice." },
@@ -65,13 +78,57 @@ const curSlot = () => {
 const isWE = () => { const d = new Date().getDay(); return d === 0 || d === 6; };
 const fmtDay = d => new Date(d).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 
-const is = { width: "100%", padding: "14px 16px", borderRadius: 12, border: "2px solid #E8E8E8", fontSize: 15, fontFamily: "Nunito", outline: "none", background: "white" };
+const is = { width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px solid ${V.border}`, fontSize: 15, fontFamily: "Nunito", outline: "none", background: V.inputBg, color: V.text, transition: "background-color 0.3s, color 0.3s, border-color 0.3s" };
 
 // ━━━ CSS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-.ps{font-family:'Nunito',sans-serif;background:${C.bg};min-height:100vh;color:${C.dark};max-width:430px;margin:0 auto;position:relative;overflow-x:hidden}
+.ps{
+  --ps-bg:#FFF9F5;
+  --ps-text:#222F3E;
+  --ps-muted:#8395A7;
+  --ps-lite:#FFF0EB;
+  --ps-input-bg:#ffffff;
+  --ps-hover-bg:#F0F0F0;
+  --ps-border:#E8E8E8;
+  --ps-card-bg:rgba(255,255,255,.85);
+  --ps-card-border:rgba(255,255,255,.5);
+  --ps-card-shadow:0 4px 24px rgba(0,0,0,.06);
+  --ps-nav-bg:rgba(255,255,255,.95);
+  --ps-progress-bg:#F0F0F0;
+  --ps-tooltip-bg:#ffffff;
+  --ps-tooltip-border:none;
+  --ps-row-border:#F0F0F0;
+  --ps-bubble-bg:#ffffff;
+  --ps-skeleton-a:#f0f0f0;
+  --ps-skeleton-b:#e0e0e0;
+  --ps-error-bg:#FFF0F0;
+  --ps-success-bg:#F0FFF4;
+  font-family:'Nunito',sans-serif;background:var(--ps-bg);min-height:100vh;color:var(--ps-text);max-width:430px;margin:0 auto;position:relative;overflow-x:hidden;transition:background-color .3s,color .3s;
+}
+.ps.dark-mode{
+  --ps-bg:#1A1A2E;
+  --ps-text:#E8E8E8;
+  --ps-muted:#8899AA;
+  --ps-lite:#16213E;
+  --ps-input-bg:#16213E;
+  --ps-hover-bg:#0F3460;
+  --ps-border:#2A3A5E;
+  --ps-card-bg:rgba(22,33,62,.85);
+  --ps-card-border:rgba(100,120,180,.2);
+  --ps-card-shadow:0 4px 24px rgba(0,0,0,.3);
+  --ps-nav-bg:rgba(22,33,62,.95);
+  --ps-progress-bg:#0F3460;
+  --ps-tooltip-bg:#16213E;
+  --ps-tooltip-border:1px solid #2A3A5E;
+  --ps-row-border:#2A3A5E;
+  --ps-bubble-bg:#16213E;
+  --ps-skeleton-a:#16213E;
+  --ps-skeleton-b:#0F3460;
+  --ps-error-bg:#3D1515;
+  --ps-success-bg:#0D3320;
+}
 .hd{font-family:'Outfit',sans-serif;font-weight:700}
 .dp{font-family:'Outfit',sans-serif;font-weight:800}
 @keyframes bp{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
@@ -83,20 +140,25 @@ const css = `
 .fi{animation:fi .4s ease forwards}
 .bb{border:none;cursor:pointer;transition:all .15s ease;-webkit-tap-highlight-color:transparent;user-select:none}
 .bb:active{transform:scale(.92)!important}
-.gc{background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.5);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
-.pb{height:8px;border-radius:4px;background:#F0F0F0;overflow:hidden}
+.gc{background:var(--ps-card-bg);backdrop-filter:blur(12px);border:1px solid var(--ps-card-border);border-radius:20px;box-shadow:var(--ps-card-shadow);transition:background-color .3s,border-color .3s,box-shadow .3s}
+.pb{height:8px;border-radius:4px;background:var(--ps-progress-bg);overflow:hidden;transition:background-color .3s}
 .pf{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
-.bn{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.05);padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100}
+.bn{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;background:var(--ps-nav-bg);backdrop-filter:blur(20px);border-top:1px solid var(--ps-card-border);padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;transition:background-color .3s,border-color .3s}
 .cb{background:linear-gradient(135deg,#FF6348,#FF8A65);color:#fff;border-radius:20px 20px 20px 4px;padding:16px 20px;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(255,99,72,.3)}
-.sl{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:12px}
-input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:#E8E8E8;outline:none}
+.sl{background:linear-gradient(90deg,var(--ps-skeleton-a) 25%,var(--ps-skeleton-b) 50%,var(--ps-skeleton-a) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:12px}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--ps-border);outline:none;transition:background-color .3s}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:${C.pri};cursor:pointer;box-shadow:0 2px 8px rgba(255,99,72,.4)}
-.sp{padding-bottom:90px;min-height:100vh}
+.sp{padding-bottom:90px;min-height:100vh;transition:background-color .3s}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:var(--ps-hover-bg);color:var(--ps-muted);border:none;cursor:pointer;transition:all .3s ease}
+.theme-toggle:hover{transform:scale(1.05)}
+.theme-toggle:active{transform:scale(.92)!important}
+.recharts-tooltip-wrapper .recharts-default-tooltip{background:var(--ps-tooltip-bg)!important;border:var(--ps-tooltip-border)!important;border-radius:12px!important;color:var(--ps-text)!important}
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label{color:var(--ps-muted)!important}
 `;
 
 // ━━━ AUTH SCREENS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function AuthScreen({ onAuth }) {
-  const [mode, setMode] = useState("welcome"); // welcome, login, register, personality, forgot, reset, reset-success
+function AuthScreen({ onAuth, darkClass }) {
+  const [mode, setMode] = useState("welcome");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -112,7 +174,7 @@ function AuthScreen({ onAuth }) {
   const [resetMsg, setResetMsg] = useState("");
 
   const errBox = error ? (
-    <div style={{ background: "#FFF0F0", border: `1px solid ${C.danger}`, borderRadius: 12, padding: "12px 16px", marginBottom: 16 }}>
+    <div style={{ background: V.hoverBg, border: `1px solid ${C.danger}`, borderRadius: 12, padding: "12px 16px", marginBottom: 16, transition: "background-color .3s" }}>
       <p style={{ color: C.danger, fontSize: 14, fontWeight: 600, margin: 0 }}>{error}</p>
     </div>
   ) : null;
@@ -158,10 +220,10 @@ function AuthScreen({ onAuth }) {
   };
 
   if (mode === "welcome") return (
-    <div className="ps"><div className="su" style={{ textAlign: "center", padding: "60px 24px" }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ textAlign: "center", padding: "60px 24px" }}>
       <div style={{ fontSize: 72, marginBottom: 16 }}>💸</div>
       <h1 className="dp" style={{ fontSize: 32, marginBottom: 12, color: C.pri }}>Pocket Survivor</h1>
-      <p style={{ fontSize: 17, color: C.mut, lineHeight: 1.6, marginBottom: 48 }}>
+      <p style={{ fontSize: 17, color: V.mut, lineHeight: 1.6, marginBottom: 48 }}>
         Your savage little spending coach that keeps your pocket money alive till month-end.
       </p>
       <button className="bb" onClick={() => setMode("register")} style={{ background: C.pri, color: "#fff", padding: "16px 48px", borderRadius: 50, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", boxShadow: "0 4px 20px rgba(255,99,72,.4)", display: "block", width: "100%", marginBottom: 12 }}>
@@ -174,55 +236,55 @@ function AuthScreen({ onAuth }) {
   );
 
   if (mode === "login") return (
-    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
-      <button className="bb" onClick={() => setMode("welcome")} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => setMode("welcome")} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24, color: V.text }}>
         <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
       </button>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Welcome back</h2>
-      <p style={{ color: C.mut, marginBottom: 32 }}>Log in to continue surviving.</p>
+      <p style={{ color: V.mut, marginBottom: 32 }}>Log in to continue surviving.</p>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
       <div style={{ position: "relative", marginBottom: 12 }}>
         <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ ...is, paddingRight: 44 }} />
-        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.mut, padding: 4 }}>
+        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: V.mut, padding: 4 }}>
           {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
       {errBox}
-      <button className="bb" onClick={handleLogin} disabled={loading} style={{ background: email && password ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
+      <button className="bb" onClick={handleLogin} disabled={loading} style={{ background: email && password ? C.pri : V.border, color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Logging in..." : "Log In"}
       </button>
-      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: "none", color: C.mut, padding: "12px", fontSize: 14, fontWeight: 600, width: "100%", marginTop: 4 }}>
+      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: "none", color: V.mut, padding: "12px", fontSize: 14, fontWeight: 600, width: "100%", marginTop: 4 }}>
         Forgot password?
       </button>
     </div></div>
   );
 
   if (mode === "register") return (
-    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
-      <button className="bb" onClick={() => setMode("welcome")} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => setMode("welcome")} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24, color: V.text }}>
         <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
       </button>
-      <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600 }}>STEP 1 OF 3</p>
+      <p style={{ fontSize: 14, color: V.mut, marginBottom: 8, fontWeight: 600 }}>STEP 1 OF 3</p>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Create your account</h2>
       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={{ ...is, marginBottom: 12 }} />
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 12 }} />
       <div style={{ position: "relative", marginBottom: 20 }}>
         <input type={showPw ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password (6+ characters)" style={{ ...is, paddingRight: 44 }} />
-        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.mut, padding: 4 }}>
+        <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: V.mut, padding: 4 }}>
           {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
 
-      <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600, marginTop: 16 }}>STEP 2: Monthly pocket money</p>
+      <p style={{ fontSize: 14, color: V.mut, marginBottom: 8, fontWeight: 600, marginTop: 16 }}>STEP 2: Monthly pocket money</p>
       <div style={{ textAlign: "center", marginBottom: 16 }}>
         <span className="dp" style={{ fontSize: 36, color: C.pri }}>₹{budget.toLocaleString("en-IN")}</span>
-        <p style={{ color: C.mut, fontSize: 13 }}>≈ ₹{Math.round(budget / 30).toLocaleString("en-IN")}/day</p>
+        <p style={{ color: V.mut, fontSize: 13 }}>≈ ₹{Math.round(budget / 30).toLocaleString("en-IN")}/day</p>
       </div>
       <input type="range" min={5000} max={50000} step={500} value={budget} onChange={e => setBudget(+e.target.value)} />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.mut, marginTop: 4, marginBottom: 20 }}><span>₹5,000</span><span>₹50,000</span></div>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: V.mut, marginTop: 4, marginBottom: 20 }}><span>₹5,000</span><span>₹50,000</span></div>
 
       <button className="bb" onClick={() => { if (name && email && password.length >= 6) setMode("personality"); else setError("Fill all fields. Password must be 6+ chars."); }}
-        style={{ background: name && email && password.length >= 6 ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%" }}>
+        style={{ background: name && email && password.length >= 6 ? C.pri : V.border, color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%" }}>
         Next: Pick Your Vibe
       </button>
       {errBox}
@@ -230,44 +292,44 @@ function AuthScreen({ onAuth }) {
   );
 
   if (mode === "forgot") return (
-    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
-      <button className="bb" onClick={() => { setError(""); setMode("login"); }} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => { setError(""); setMode("login"); }} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24, color: V.text }}>
         <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
       </button>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Forgot password</h2>
-      <p style={{ color: C.mut, marginBottom: 32 }}>Enter your email and we'll send a reset code.</p>
+      <p style={{ color: V.mut, marginBottom: 32 }}>Enter your email and we'll send a reset code.</p>
       <input type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder="Email" style={{ ...is, marginBottom: 16 }} />
       {errBox}
-      <button className="bb" onClick={handleForgotPassword} disabled={loading || !resetEmail} style={{ background: resetEmail ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
+      <button className="bb" onClick={handleForgotPassword} disabled={loading || !resetEmail} style={{ background: resetEmail ? C.pri : V.border, color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Sending..." : "Send Reset Code"}
       </button>
     </div></div>
   );
 
   if (mode === "reset") return (
-    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
-      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => { setError(""); setMode("forgot"); }} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24, color: V.text }}>
         <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
       </button>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>Reset password</h2>
-      {resetMsg && <div style={{ background: "#F0FFF4", border: `1px solid ${C.ok}`, borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
+      {resetMsg && <div style={{ background: "var(--ps-success-bg)", border: `1px solid ${C.ok}`, borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
         <p style={{ color: C.ok, fontSize: 14, fontWeight: 600, margin: 0 }}>{resetMsg}</p>
       </div>}
       <input type="text" value={resetCode} onChange={e => setResetCode(e.target.value)} placeholder="Reset Code (6 digits)" maxLength={6} style={{ ...is, marginBottom: 12, letterSpacing: 4, textAlign: "center", fontSize: 20, fontWeight: 700 }} />
       <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="New Password (6+ characters)" style={{ ...is, marginBottom: 12 }} />
       <input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="Confirm Password" style={{ ...is, marginBottom: 16 }} />
       {errBox}
-      <button className="bb" onClick={handleResetPassword} disabled={loading || !resetCode || !newPw || !confirmPw} style={{ background: resetCode && newPw && confirmPw ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
+      <button className="bb" onClick={handleResetPassword} disabled={loading || !resetCode || !newPw || !confirmPw} style={{ background: resetCode && newPw && confirmPw ? C.pri : V.border, color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Resetting..." : "Reset Password"}
       </button>
     </div></div>
   );
 
   if (mode === "reset-success") return (
-    <div className="ps"><div className="su" style={{ textAlign: "center", padding: "60px 24px" }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ textAlign: "center", padding: "60px 24px" }}>
       <div style={{ fontSize: 72, marginBottom: 16 }}>✅</div>
       <h2 className="dp" style={{ fontSize: 26, marginBottom: 12, color: C.ok }}>Password reset!</h2>
-      <p style={{ color: C.mut, fontSize: 16, marginBottom: 32 }}>You can now log in with your new password.</p>
+      <p style={{ color: V.mut, fontSize: 16, marginBottom: 32 }}>You can now log in with your new password.</p>
       <button className="bb" onClick={() => { setError(""); setResetCode(""); setNewPw(""); setConfirmPw(""); setResetMsg(""); setMode("login"); }} style={{ background: C.pri, color: "#fff", padding: "16px 48px", borderRadius: 50, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", boxShadow: "0 4px 20px rgba(255,99,72,.4)", width: "100%" }}>
         Back to Log In
       </button>
@@ -276,26 +338,26 @@ function AuthScreen({ onAuth }) {
 
   // Personality selection (default fallthrough)
   return (
-    <div className="ps"><div className="su" style={{ padding: "48px 24px" }}>
-      <button className="bb" onClick={() => setMode("register")} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+    <div className={`ps ${darkClass}`}><div className="su" style={{ padding: "48px 24px" }}>
+      <button className="bb" onClick={() => setMode("register")} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, marginBottom: 24, color: V.text }}>
         <ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back
       </button>
-      <p style={{ fontSize: 14, color: C.mut, marginBottom: 8, fontWeight: 600 }}>STEP 3 OF 3</p>
+      <p style={{ fontSize: 14, color: V.mut, marginBottom: 8, fontWeight: 600 }}>STEP 3 OF 3</p>
       <h2 className="hd" style={{ fontSize: 26, marginBottom: 8 }}>What's your vibe?</h2>
-      <p style={{ color: C.mut, marginBottom: 24 }}>This decides how your coach talks to you.</p>
+      <p style={{ color: V.mut, marginBottom: 24 }}>This decides how your coach talks to you.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {Object.entries(PERS).map(([k, p], i) => (
-          <button key={k} className="bb be gc" onClick={() => setPersonality(k)} style={{ padding: 20, textAlign: "left", animationDelay: `${i * .1}s`, border: personality === k ? `2px solid ${p.color}` : "2px solid transparent", background: personality === k ? `${p.color}10` : "rgba(255,255,255,.85)" }}>
+          <button key={k} className="bb be gc" onClick={() => setPersonality(k)} style={{ padding: 20, textAlign: "left", animationDelay: `${i * .1}s`, border: personality === k ? `2px solid ${p.color}` : `2px solid transparent`, background: personality === k ? `${p.color}10` : V.cardBg }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
               <span style={{ fontSize: 28 }}>{p.emoji}</span>
               <span className="hd" style={{ fontSize: 20, color: p.color }}>{p.label}</span>
             </div>
-            <p style={{ fontSize: 14, color: C.mut, lineHeight: 1.4 }}>{p.desc}</p>
+            <p style={{ fontSize: 14, color: V.mut, lineHeight: 1.4 }}>{p.desc}</p>
           </button>
         ))}
       </div>
       <button className="bb" onClick={handleRegister} disabled={loading || !personality}
-        style={{ background: personality ? C.pri : "#DDD", color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", marginTop: 24, opacity: loading ? 0.7 : 1 }}>
+        style={{ background: personality ? C.pri : V.border, color: "#fff", padding: 16, borderRadius: 16, fontSize: 17, fontWeight: 700, fontFamily: "Outfit", width: "100%", marginTop: 24, opacity: loading ? 0.7 : 1 }}>
         {loading ? "Creating account..." : "Start Surviving 🚀"}
       </button>
       {errBox}
@@ -315,7 +377,7 @@ function Nav({ active, go }) {
   return <div className="bn"><div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
     {items.map(it => {
       const isAdd = it.id === "entry", isA = active === it.id;
-      return <button key={it.id} className="bb" onClick={() => go(it.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: isAdd ? C.pri : "none", color: isAdd ? "#fff" : isA ? C.pri : C.mut, borderRadius: isAdd ? 50 : 0, padding: isAdd ? "12px 20px" : "8px 12px", marginTop: isAdd ? -24 : 0, boxShadow: isAdd ? "0 4px 20px rgba(255,99,72,.4)" : "none", transform: isAdd ? "scale(1.1)" : "none" }}>
+      return <button key={it.id} className="bb" onClick={() => go(it.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: isAdd ? C.pri : "none", color: isAdd ? "#fff" : isA ? C.pri : V.mut, borderRadius: isAdd ? 50 : 0, padding: isAdd ? "12px 20px" : "8px 12px", marginTop: isAdd ? -24 : 0, boxShadow: isAdd ? "0 4px 20px rgba(255,99,72,.4)" : "none", transform: isAdd ? "scale(1.1)" : "none" }}>
         <it.icon size={isAdd ? 24 : 22} />
         {!isAdd && <span style={{ fontSize: 11, fontWeight: isA ? 700 : 500 }}>{it.l}</span>}
       </button>;
@@ -324,7 +386,7 @@ function Nav({ active, go }) {
 }
 
 // ━━━ DASHBOARD ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function Dash({ user, go }) {
+function Dash({ user, go, darkMode, toggleDark }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -357,10 +419,15 @@ function Dash({ user, go }) {
   return <div className="sp" style={{ padding: "24px 16px" }}>
     <div className="su" style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
       <div>
-        <p style={{ color: C.mut, fontSize: 14 }}>Hey,</p>
+        <p style={{ color: V.mut, fontSize: 14 }}>Hey,</p>
         <h1 className="dp" style={{ fontSize: 28 }}>{user.name} {PERS[user.personality]?.emoji}</h1>
       </div>
-      <button className="bb" onClick={() => go("settings")} style={{ background: "#F0F0F0", borderRadius: 12, padding: 10, color: C.mut }}><Settings size={20} /></button>
+      <div style={{ display: "flex", gap: 8 }}>
+        <button className="theme-toggle" onClick={toggleDark} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+          {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+        <button className="bb" onClick={() => go("settings")} style={{ background: V.hoverBg, borderRadius: 12, padding: 10, color: V.mut, transition: "background-color .3s, color .3s" }}><Settings size={20} /></button>
+      </div>
     </div>
 
     <div className="su" style={{ marginBottom: 20, animationDelay: ".1s" }}>
@@ -379,9 +446,9 @@ function Dash({ user, go }) {
         { l: "Remaining", v: `₹${d.remaining}`, s: `${d.daysLeft} days left`, c: C.sec },
         { l: "Monthly", v: `₹${d.monthSpent}`, s: `of ₹${d.monthlyBudget}`, c: C.pri },
       ].map(s => <div key={s.l} className="gc su" style={{ padding: 16 }}>
-        <p style={{ fontSize: 12, color: C.mut, marginBottom: 4, fontWeight: 600 }}>{s.l}</p>
+        <p style={{ fontSize: 12, color: V.mut, marginBottom: 4, fontWeight: 600 }}>{s.l}</p>
         <p className="hd" style={{ fontSize: 22, color: s.c }}>{s.v}</p>
-        <p style={{ fontSize: 12, color: C.mut }}>{s.s}</p>
+        <p style={{ fontSize: 12, color: V.mut }}>{s.s}</p>
       </div>)}
     </div>
 
@@ -391,7 +458,7 @@ function Dash({ user, go }) {
         <span style={{ color: sc, fontWeight: 700 }}>{d.spendStatus === "over" ? "Over!" : d.spendStatus === "under" ? "Great!" : "On Track"}</span>
       </div>
       <div className="pb"><div className="pf" style={{ width: `${Math.min(100, (d.todaySpent / Math.max(1, d.dailyBudget)) * 100)}%`, background: `linear-gradient(90deg,${C.sec},${sc})` }} /></div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 13, color: C.mut }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 13, color: V.mut }}>
         <span>₹{d.todaySpent} spent</span><span>₹{d.dailyBudget} limit</span>
       </div>
     </div>
@@ -409,7 +476,7 @@ function Dash({ user, go }) {
             <span style={{ color: C.pri, fontWeight: 700 }}>{pct}%</span>
           </div>
           <div className="pb"><div className="pf" style={{ width: `${pct}%`, background: `linear-gradient(90deg,${C.acc},${C.pri})` }} /></div>
-          <p style={{ fontSize: 12, color: C.mut, marginTop: 6 }}>₹{g.savedAmount} / ₹{g.targetAmount}</p>
+          <p style={{ fontSize: 12, color: V.mut, marginTop: 6 }}>₹{g.savedAmount} / ₹{g.targetAmount}</p>
         </div>;
       })}
     </div>}
@@ -418,9 +485,9 @@ function Dash({ user, go }) {
       <h3 className="hd" style={{ fontSize: 18, marginBottom: 12 }}>Today</h3>
       {d.todayExpenses.map(e => {
         const Ic = CAT_ICONS[e.category] || Receipt;
-        return <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #F0F0F0" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: C.lite, display: "flex", alignItems: "center", justifyContent: "center" }}><Ic size={18} color={C.pri} /></div>
-          <div style={{ flex: 1 }}><p style={{ fontWeight: 600, fontSize: 15 }}>{e.category}</p><p style={{ fontSize: 12, color: C.mut }}>{e.timeOfDay}{e.note ? ` • ${e.note}` : ""}</p></div>
+        return <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${V.border}`, transition: "border-color .3s" }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: V.lite, display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color .3s" }}><Ic size={18} color={C.pri} /></div>
+          <div style={{ flex: 1 }}><p style={{ fontWeight: 600, fontSize: 15 }}>{e.category}</p><p style={{ fontSize: 12, color: V.mut }}>{e.timeOfDay}{e.note ? ` • ${e.note}` : ""}</p></div>
           <span className="hd" style={{ fontSize: 17 }}>₹{e.amount}</span>
         </div>;
       })}
@@ -429,7 +496,7 @@ function Dash({ user, go }) {
 }
 
 // ━━━ BUBBLE ENTRY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function Entry({ onDone }) {
+function Entry({ onDone, darkMode }) {
   const [step, setStep] = useState(0);
   const [time, setTime] = useState(null);
   const [cat, setCat] = useState(null);
@@ -442,12 +509,10 @@ function Entry({ onDone }) {
   const [prices, setPrices] = useState(DEFAULT_PRICES);
   const at = curSlot();
 
-  // Fetch smart suggestions from backend NLP
   const loadSuggestions = async (timeOfDay) => {
     try {
       const data = await api.getSuggestions(timeOfDay);
       if (data.categories?.length) setCats(data.categories);
-      // Store prices map for later
       setPrices(DEFAULT_PRICES);
       window.__psPriceMap = data.prices || {};
     } catch {
@@ -473,29 +538,29 @@ function Entry({ onDone }) {
   if (done) return <div className="sp" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, minHeight: "80vh" }}>
     <div style={{ fontSize: 72, animation: "bp .5s ease" }}>✅</div>
     <h2 className="hd su" style={{ fontSize: 24, marginTop: 16 }}>Logged!</h2>
-    <p className="su" style={{ color: C.mut, animationDelay: ".1s" }}>₹{showC ? cAmt : amt} for {cat}</p>
+    <p className="su" style={{ color: V.mut, animationDelay: ".1s" }}>₹{showC ? cAmt : amt} for {cat}</p>
   </div>;
 
   return <div className="sp" style={{ padding: "24px 16px" }}>
     <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      {step > 0 ? <button className="bb" onClick={() => setStep(step - 1)} style={{ background: "#F0F0F0", borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, color: C.dark }}><ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back</button> : <div />}
+      {step > 0 ? <button className="bb" onClick={() => setStep(step - 1)} style={{ background: V.hoverBg, borderRadius: 50, padding: "8px 16px", fontSize: 14, fontWeight: 600, color: V.text, transition: "background-color .3s, color .3s" }}><ChevronLeft size={16} style={{ verticalAlign: "middle" }} /> Back</button> : <div />}
     </div>
 
     <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
-      {[0, 1, 2, 3].map(s => <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? C.pri : "#E8E8E8", transition: "background .3s" }} />)}
+      {[0, 1, 2, 3].map(s => <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? C.pri : V.border, transition: "background .3s" }} />)}
     </div>
 
     {step === 0 && <div>
       <h2 className="hd" style={{ fontSize: 22, marginBottom: 4 }}>When did you spend?</h2>
-      <p style={{ color: C.mut, fontSize: 14, marginBottom: 24 }}>{isWE() ? "🎉 Weekend mode" : "📚 Weekday mode"}</p>
+      <p style={{ color: V.mut, fontSize: 14, marginBottom: 24 }}>{isWE() ? "🎉 Weekend mode" : "📚 Weekday mode"}</p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {TIMES.map((sl, i) => {
           const isNow = sl.id === at;
-          return <button key={sl.id} className="bb be gc" onClick={() => { setTime(sl.id); loadSuggestions(sl.id); setStep(1); }} style={{ padding: 20, textAlign: "center", animationDelay: `${i * .08}s`, border: isNow ? `2px solid ${sl.color}` : "2px solid transparent", position: "relative" }}>
+          return <button key={sl.id} className="bb be gc" onClick={() => { setTime(sl.id); loadSuggestions(sl.id); setStep(1); }} style={{ padding: 20, textAlign: "center", animationDelay: `${i * .08}s`, border: isNow ? `2px solid ${sl.color}` : `2px solid transparent`, position: "relative" }}>
             {isNow && <span style={{ position: "absolute", top: 8, right: 8, fontSize: 10, fontWeight: 700, background: sl.color, color: "#fff", padding: "2px 8px", borderRadius: 50 }}>NOW</span>}
             <sl.icon size={32} color={sl.color} />
             <p className="hd" style={{ marginTop: 8, fontSize: 16 }}>{sl.label}</p>
-            <p style={{ fontSize: 12, color: C.mut }}>{sl.hrs}</p>
+            <p style={{ fontSize: 12, color: V.mut }}>{sl.hrs}</p>
           </button>;
         })}
       </div>
@@ -503,7 +568,7 @@ function Entry({ onDone }) {
 
     {step === 1 && <div>
       <h2 className="hd" style={{ fontSize: 22, marginBottom: 4 }}>What did you spend on?</h2>
-      <p style={{ color: C.mut, fontSize: 14, marginBottom: 24 }}>{TIMES.find(t => t.id === time)?.label} picks</p>
+      <p style={{ color: V.mut, fontSize: 14, marginBottom: 24 }}>{TIMES.find(t => t.id === time)?.label} picks</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
         {cats.map((c, i) => {
           const Ic = CAT_ICONS[c] || Receipt;
@@ -513,44 +578,44 @@ function Entry({ onDone }) {
             if (pm[c]?.length) setPrices(pm[c]);
             else setPrices(DEFAULT_PRICES);
             setStep(2);
-          }} style={{ background: "#fff", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 2px 12px rgba(0,0,0,.06)", animationDelay: `${i * .05}s` }}>
+          }} style={{ background: V.inputBg, borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--ps-card-shadow)", animationDelay: `${i * .05}s`, color: V.text, transition: "background-color .3s, color .3s" }}>
             <Ic size={18} color={C.pri} /><span style={{ fontWeight: 600, fontSize: 15 }}>{c}</span>
           </button>;
         })}
-        <button className="bb be" onClick={() => { setCat("Other"); setStep(2); }} style={{ background: "#F0F0F0", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8 }}>
-          <Plus size={18} color={C.mut} /><span style={{ fontWeight: 600, fontSize: 15, color: C.mut }}>Other</span>
+        <button className="bb be" onClick={() => { setCat("Other"); setStep(2); }} style={{ background: V.hoverBg, borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, transition: "background-color .3s" }}>
+          <Plus size={18} color={V.mut} /><span style={{ fontWeight: 600, fontSize: 15, color: V.mut }}>Other</span>
         </button>
       </div>
     </div>}
 
     {step === 2 && <div>
       <h2 className="hd" style={{ fontSize: 22, marginBottom: 4 }}>How much?</h2>
-      <p style={{ color: C.mut, fontSize: 14, marginBottom: 24 }}>{cat}</p>
+      <p style={{ color: V.mut, fontSize: 14, marginBottom: 24 }}>{cat}</p>
       {!showC ? <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
         {prices.map((p, i) => (
           <button key={`${p}-${i}`} className="bb be" onClick={() => { setAmt(p); setStep(3); }}
-            style={{ width: 80, height: 80, borderRadius: "50%", background: i === 0 && prices[0] !== DEFAULT_PRICES[0] ? `linear-gradient(135deg,${C.pri},${C.acc})` : "#fff", color: i === 0 && prices[0] !== DEFAULT_PRICES[0] ? "#fff" : C.dark, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 12px rgba(0,0,0,.06)", animationDelay: `${i * .05}s`, fontWeight: 700, fontSize: 17, fontFamily: "Outfit" }}>
+            style={{ width: 80, height: 80, borderRadius: "50%", background: i === 0 && prices[0] !== DEFAULT_PRICES[0] ? `linear-gradient(135deg,${C.pri},${C.acc})` : V.inputBg, color: i === 0 && prices[0] !== DEFAULT_PRICES[0] ? "#fff" : V.text, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "var(--ps-card-shadow)", animationDelay: `${i * .05}s`, fontWeight: 700, fontSize: 17, fontFamily: "Outfit", transition: "background-color .3s, color .3s" }}>
             ₹{p}{i === 0 && prices[0] !== DEFAULT_PRICES[0] && <span style={{ fontSize: 9, opacity: .8 }}>usual</span>}
           </button>
         ))}
-        <button className="bb be" onClick={() => setShowC(true)} style={{ width: 80, height: 80, borderRadius: "50%", background: "#F0F0F0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14, color: C.mut }}>Custom</button>
+        <button className="bb be" onClick={() => setShowC(true)} style={{ width: 80, height: 80, borderRadius: "50%", background: V.hoverBg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14, color: V.mut, transition: "background-color .3s" }}>Custom</button>
       </div> :
       <div className="fi" style={{ textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16 }}>
           <span className="dp" style={{ fontSize: 36, color: C.pri }}>₹</span>
-          <input type="number" value={cAmt} onChange={e => setCAmt(e.target.value)} placeholder="0" autoFocus style={{ fontSize: 48, fontFamily: "Outfit", fontWeight: 800, width: 160, border: "none", outline: "none", textAlign: "center", background: "transparent", color: C.dark }} />
+          <input type="number" value={cAmt} onChange={e => setCAmt(e.target.value)} placeholder="0" autoFocus style={{ fontSize: 48, fontFamily: "Outfit", fontWeight: 800, width: 160, border: "none", outline: "none", textAlign: "center", background: "transparent", color: V.text }} />
         </div>
-        <button className="bb" onClick={() => { if (cAmt) { setAmt(+cAmt); setStep(3); } }} style={{ background: cAmt ? C.pri : "#DDD", color: "#fff", padding: "14px 48px", borderRadius: 50, fontSize: 16, fontWeight: 700, fontFamily: "Outfit" }}>Done</button>
-        <button className="bb" onClick={() => setShowC(false)} style={{ display: "block", margin: "12px auto", background: "none", color: C.mut, fontSize: 14 }}>Back to quick picks</button>
+        <button className="bb" onClick={() => { if (cAmt) { setAmt(+cAmt); setStep(3); } }} style={{ background: cAmt ? C.pri : V.border, color: "#fff", padding: "14px 48px", borderRadius: 50, fontSize: 16, fontWeight: 700, fontFamily: "Outfit" }}>Done</button>
+        <button className="bb" onClick={() => setShowC(false)} style={{ display: "block", margin: "12px auto", background: "none", color: V.mut, fontSize: 14 }}>Back to quick picks</button>
       </div>}
     </div>}
 
     {step === 3 && <div className="fi" style={{ textAlign: "center" }}>
       <h2 className="hd" style={{ fontSize: 22, marginBottom: 24 }}>Confirm</h2>
       <div className="gc" style={{ padding: 24, marginBottom: 20, display: "inline-block" }}>
-        <p style={{ fontSize: 14, color: C.mut, marginBottom: 4 }}>{cat}</p>
+        <p style={{ fontSize: 14, color: V.mut, marginBottom: 4 }}>{cat}</p>
         <p className="dp" style={{ fontSize: 48, color: C.pri }}>₹{amt}</p>
-        <p style={{ fontSize: 14, color: C.mut }}>{TIMES.find(t => t.id === time)?.label}</p>
+        <p style={{ fontSize: 14, color: V.mut }}>{TIMES.find(t => t.id === time)?.label}</p>
       </div>
       <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder="Add a note (optional)" style={{ ...is, marginBottom: 16 }} />
       <button className="bb" onClick={confirm} style={{ background: C.pri, color: "#fff", padding: 16, borderRadius: 16, fontSize: 18, fontWeight: 700, fontFamily: "Outfit", width: "100%", boxShadow: "0 4px 20px rgba(255,99,72,.4)" }}>
@@ -598,13 +663,13 @@ function Goals() {
       <input type="text" value={gn} onChange={e => setGn(e.target.value)} placeholder="Goal name" style={is} />
       <input type="number" value={gt} onChange={e => setGt(e.target.value)} placeholder="Target amount (₹)" style={{ ...is, marginTop: 8 }} />
       <input type="date" value={gd} onChange={e => setGd(e.target.value)} style={{ ...is, marginTop: 8 }} />
-      <button className="bb" onClick={handleAdd} style={{ background: gn && gt ? C.pri : "#DDD", color: "#fff", padding: 12, borderRadius: 12, width: "100%", marginTop: 12, fontWeight: 700, fontFamily: "Outfit" }}>Create Goal</button>
+      <button className="bb" onClick={handleAdd} style={{ background: gn && gt ? C.pri : V.border, color: "#fff", padding: 12, borderRadius: 12, width: "100%", marginTop: 12, fontWeight: 700, fontFamily: "Outfit" }}>Create Goal</button>
     </div>}
 
     {goals.length === 0 && !show && <div style={{ textAlign: "center", padding: "60px 24px" }}>
       <div style={{ fontSize: 56, marginBottom: 16 }}>🎯</div>
       <h3 className="hd" style={{ fontSize: 20, marginBottom: 8 }}>No goals yet</h3>
-      <p style={{ color: C.mut }}>Set a savings goal and start tracking it!</p>
+      <p style={{ color: V.mut }}>Set a savings goal and start tracking it!</p>
     </div>}
 
     {goals.map(g => {
@@ -613,14 +678,14 @@ function Goals() {
       return <div key={g.id} className="gc su" style={{ padding: 20, marginBottom: 12, border: done ? `2px solid ${C.ok}` : undefined }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div><h3 className="hd" style={{ fontSize: 18 }}>{done ? "🏆 " : ""}{g.name}</h3>
-            {g.daysToDeadline != null && !done && <p style={{ fontSize: 12, color: g.daysToDeadline < 7 ? C.danger : C.mut }}>{g.daysToDeadline} days left</p>}
+            {g.daysToDeadline != null && !done && <p style={{ fontSize: 12, color: g.daysToDeadline < 7 ? C.danger : V.mut }}>{g.daysToDeadline} days left</p>}
           </div>
-          <button className="bb" onClick={() => handleDel(g.id)} style={{ background: "none", color: C.mut, padding: 4 }}><Trash2 size={16} /></button>
+          <button className="bb" onClick={() => handleDel(g.id)} style={{ background: "none", color: V.mut, padding: 4 }}><Trash2 size={16} /></button>
         </div>
         <div style={{ margin: "12px 0" }}>
           <div className="pb" style={{ height: 10 }}><div className="pf" style={{ width: `${pct}%`, height: 10, background: done ? C.ok : `linear-gradient(90deg,${C.acc},${C.pri})` }} /></div>
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 13 }}>
-            <span style={{ color: C.mut }}>₹{g.savedAmount} saved</span><span style={{ fontWeight: 700, color: C.pri }}>₹{g.targetAmount}</span>
+            <span style={{ color: V.mut }}>₹{g.savedAmount} saved</span><span style={{ fontWeight: 700, color: C.pri }}>₹{g.targetAmount}</span>
           </div>
         </div>
         {!done && g.dailySaveNeeded && <p style={{ fontSize: 13, color: C.pri, marginBottom: 8 }}>💡 Save ₹{g.dailySaveNeeded}/day to hit this</p>}
@@ -628,9 +693,9 @@ function Goals() {
           <div className="fi" style={{ display: "flex", gap: 8 }}>
             <input type="number" value={addA} onChange={e => setAddA(e.target.value)} placeholder="₹ amount" autoFocus style={{ ...is, flex: 1, marginTop: 0 }} />
             <button className="bb" onClick={() => handleSave(g.id)} style={{ background: C.ok, color: "#fff", borderRadius: 12, padding: "0 16px", fontWeight: 700 }}><Check size={18} /></button>
-            <button className="bb" onClick={() => setAddTo(null)} style={{ background: "#F0F0F0", borderRadius: 12, padding: "0 12px" }}><X size={18} /></button>
+            <button className="bb" onClick={() => setAddTo(null)} style={{ background: V.hoverBg, borderRadius: 12, padding: "0 12px", transition: "background-color .3s" }}><X size={18} color={V.mut} /></button>
           </div> :
-          <button className="bb" onClick={() => setAddTo(g.id)} style={{ background: C.lite, color: C.pri, borderRadius: 12, padding: "10px 16px", width: "100%", fontWeight: 700, fontSize: 14, marginTop: 4 }}>
+          <button className="bb" onClick={() => setAddTo(g.id)} style={{ background: V.lite, color: C.pri, borderRadius: 12, padding: "10px 16px", width: "100%", fontWeight: 700, fontSize: 14, marginTop: 4, transition: "background-color .3s" }}>
             <PiggyBank size={16} style={{ verticalAlign: "middle", marginRight: 6 }} />Add Savings
           </button>
         )}
@@ -641,7 +706,7 @@ function Goals() {
 }
 
 // ━━━ INSIGHTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function Stats() {
+function Stats({ darkMode }) {
   const [data, setData] = useState(null);
   useEffect(() => { api.getInsights().then(setData).catch(console.error); }, []);
   const pc = [C.pri, C.sec, C.acc, C.purp, C.danger, "#636E72"];
@@ -651,32 +716,35 @@ function Stats() {
   const pie = data.categoryBreakdown?.slice(0, 6).map(c => ({ name: c.category, value: c.totalSpent })) || [];
   const daily = data.dailyTotals?.map(d => ({ day: new Date(d.date).toLocaleDateString("en-IN", { weekday: "short" }), amount: d.amount })) || [];
 
+  const tickColor = darkMode ? "#8899AA" : "#8395A7";
+  const tooltipStyle = { borderRadius: 12, border: darkMode ? "1px solid #2A3A5E" : "none", background: darkMode ? "#16213E" : "#fff", color: darkMode ? "#E8E8E8" : "#222F3E" };
+
   return <div className="sp" style={{ padding: "24px 16px" }}>
     <h1 className="dp" style={{ fontSize: 26, marginBottom: 24 }}>Insights 📊</h1>
     <div className="gc su" style={{ padding: 20, marginBottom: 16 }}>
       <div style={{ display: "flex", gap: 24, justifyContent: "center" }}>
         {[{ ic: Flame, v: data.streak?.currentStreak || 0, l: "Streak", c: C.pri }, { ic: Award, v: data.badges?.length || 0, l: "Badges", c: C.acc }, { ic: Star, v: data.streak?.bestStreak || 0, l: "Best", c: C.sec }].map(s =>
-          <div key={s.l} style={{ textAlign: "center" }}><s.ic size={28} color={s.c} /><p className="hd" style={{ fontSize: 28 }}>{s.v}</p><p style={{ fontSize: 12, color: C.mut }}>{s.l}</p></div>
+          <div key={s.l} style={{ textAlign: "center" }}><s.ic size={28} color={s.c} /><p className="hd" style={{ fontSize: 28 }}>{s.v}</p><p style={{ fontSize: 12, color: V.mut }}>{s.l}</p></div>
         )}
       </div>
     </div>
     {data.badges?.length > 0 && <div className="su" style={{ marginBottom: 16 }}>
       <h3 className="hd" style={{ fontSize: 17, marginBottom: 10 }}>Badges</h3>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {data.badges.map(b => { const bd = BADGES_DEF.find(x => x.id === b); return bd ? <div key={b} style={{ background: "#fff", borderRadius: 12, padding: "8px 14px", boxShadow: "0 2px 8px rgba(0,0,0,.05)", display: "flex", alignItems: "center", gap: 6 }}>
+        {data.badges.map(b => { const bd = BADGES_DEF.find(x => x.id === b); return bd ? <div key={b} style={{ background: V.inputBg, borderRadius: 12, padding: "8px 14px", boxShadow: "var(--ps-card-shadow)", display: "flex", alignItems: "center", gap: 6, transition: "background-color .3s" }}>
           <span style={{ fontSize: 20 }}>{bd.icon}</span><span style={{ fontSize: 13, fontWeight: 600 }}>{bd.name}</span>
         </div> : null; })}
       </div>
     </div>}
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-      <div className="gc" style={{ padding: 16 }}><p style={{ fontSize: 12, color: C.mut }}>Avg Daily</p><p className="hd" style={{ fontSize: 22, color: C.pri }}>₹{data.avgDaily}</p></div>
-      <div className="gc" style={{ padding: 16 }}><p style={{ fontSize: 12, color: C.mut }}>Top Category</p><p className="hd" style={{ fontSize: 18, color: C.pri }}>{data.topCategory || "—"}</p></div>
+      <div className="gc" style={{ padding: 16 }}><p style={{ fontSize: 12, color: V.mut }}>Avg Daily</p><p className="hd" style={{ fontSize: 22, color: C.pri }}>₹{data.avgDaily}</p></div>
+      <div className="gc" style={{ padding: 16 }}><p style={{ fontSize: 12, color: V.mut }}>Top Category</p><p className="hd" style={{ fontSize: 18, color: C.pri }}>{data.topCategory || "—"}</p></div>
     </div>
     {daily.length > 0 && <div className="gc" style={{ padding: 20, marginBottom: 16 }}>
       <h3 className="hd" style={{ fontSize: 17, marginBottom: 16 }}>Last 7 Days</h3>
       <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={daily}><XAxis dataKey="day" tick={{ fontSize: 12, fill: C.mut }} axisLine={false} tickLine={false} /><YAxis hide />
-          <Tooltip formatter={v => [`₹${v}`, "Spent"]} contentStyle={{ borderRadius: 12, border: "none" }} />
+        <BarChart data={daily}><XAxis dataKey="day" tick={{ fontSize: 12, fill: tickColor }} axisLine={false} tickLine={false} /><YAxis hide />
+          <Tooltip formatter={v => [`₹${v}`, "Spent"]} contentStyle={tooltipStyle} />
           <Bar dataKey="amount" radius={[8, 8, 0, 0]} fill={C.pri} /></BarChart>
       </ResponsiveContainer>
     </div>}
@@ -685,7 +753,7 @@ function Stats() {
       <ResponsiveContainer width="100%" height={200}>
         <PieChart><Pie data={pie} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
           {pie.map((_, i) => <Cell key={i} fill={pc[i % pc.length]} />)}
-        </Pie><Tooltip formatter={v => [`₹${v}`]} /></PieChart>
+        </Pie><Tooltip formatter={v => [`₹${v}`]} contentStyle={tooltipStyle} /></PieChart>
       </ResponsiveContainer>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 8 }}>
         {pie.map((d, i) => <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: pc[i] }} /><span>{d.name}</span></div>)}
@@ -724,11 +792,11 @@ function Hist() {
           <span style={{ color: C.pri, fontWeight: 700 }}>₹{total(es)}</span>
         </div>
         {es.map(e => { const Ic = CAT_ICONS[e.category] || Receipt;
-          return <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #F5F5F5" }}>
-            <div style={{ width: 38, height: 38, borderRadius: 10, background: C.lite, display: "flex", alignItems: "center", justifyContent: "center" }}><Ic size={16} color={C.pri} /></div>
-            <div style={{ flex: 1 }}><p style={{ fontWeight: 600, fontSize: 14 }}>{e.category}</p><p style={{ fontSize: 12, color: C.mut }}>{e.timeOfDay}{e.note ? ` • ${e.note}` : ""}</p></div>
+          return <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${V.border}`, transition: "border-color .3s" }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: V.lite, display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color .3s" }}><Ic size={16} color={C.pri} /></div>
+            <div style={{ flex: 1 }}><p style={{ fontWeight: 600, fontSize: 14 }}>{e.category}</p><p style={{ fontSize: 12, color: V.mut }}>{e.timeOfDay}{e.note ? ` • ${e.note}` : ""}</p></div>
             <span className="hd" style={{ fontSize: 16 }}>₹{e.amount}</span>
-            <button className="bb" onClick={() => handleDel(e.id)} style={{ background: "none", padding: 4, color: C.mut }}><Trash2 size={14} /></button>
+            <button className="bb" onClick={() => handleDel(e.id)} style={{ background: "none", padding: 4, color: V.mut }}><Trash2 size={14} /></button>
           </div>;
         })}
       </div>
@@ -737,7 +805,7 @@ function Hist() {
 }
 
 // ━━━ SETTINGS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function Sett({ user, onUpdate, onLogout }) {
+function Sett({ user, onUpdate, onLogout, darkMode, toggleDark }) {
   const [name, setName] = useState(user.name);
   const [bud, setBud] = useState(user.monthlyBudget);
   const [pers, setPers] = useState(user.personality);
@@ -751,16 +819,29 @@ function Sett({ user, onUpdate, onLogout }) {
 
   return <div className="sp" style={{ padding: "24px 16px" }}>
     <h1 className="dp" style={{ fontSize: 26, marginBottom: 24 }}>Settings ⚙️</h1>
+
+    <div className="gc" style={{ padding: 20, marginBottom: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h3 className="hd" style={{ fontSize: 17 }}>Dark Mode</h3>
+          <p style={{ fontSize: 13, color: V.mut }}>{darkMode ? "On" : "Off"}</p>
+        </div>
+        <button className="theme-toggle" onClick={toggleDark} style={{ width: 48, height: 48 }}>
+          {darkMode ? <Sun size={22} /> : <Moon size={22} />}
+        </button>
+      </div>
+    </div>
+
     <div className="gc" style={{ padding: 20, marginBottom: 16 }}>
       <h3 className="hd" style={{ fontSize: 17, marginBottom: 16 }}>Profile</h3>
-      <label style={{ fontSize: 13, color: C.mut, fontWeight: 600, display: "block", marginBottom: 4 }}>Name</label>
+      <label style={{ fontSize: 13, color: V.mut, fontWeight: 600, display: "block", marginBottom: 4 }}>Name</label>
       <input type="text" value={name} onChange={e => setName(e.target.value)} style={{ ...is, marginBottom: 12 }} />
-      <label style={{ fontSize: 13, color: C.mut, fontWeight: 600, display: "block", marginBottom: 4 }}>Monthly Budget: ₹{bud.toLocaleString("en-IN")}</label>
+      <label style={{ fontSize: 13, color: V.mut, fontWeight: 600, display: "block", marginBottom: 4 }}>Monthly Budget: ₹{bud.toLocaleString("en-IN")}</label>
       <input type="range" min={5000} max={50000} step={500} value={bud} onChange={e => setBud(+e.target.value)} />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.mut, marginTop: 4, marginBottom: 16 }}><span>₹5,000</span><span>₹50,000</span></div>
-      <label style={{ fontSize: 13, color: C.mut, fontWeight: 600, display: "block", marginBottom: 8 }}>Personality</label>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: V.mut, marginTop: 4, marginBottom: 16 }}><span>₹5,000</span><span>₹50,000</span></div>
+      <label style={{ fontSize: 13, color: V.mut, fontWeight: 600, display: "block", marginBottom: 8 }}>Personality</label>
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {Object.entries(PERS).map(([k, p]) => <button key={k} className="bb" onClick={() => setPers(k)} style={{ flex: 1, padding: "12px 8px", borderRadius: 12, fontSize: 14, fontWeight: 700, border: pers === k ? `2px solid ${p.color}` : "2px solid #E8E8E8", background: pers === k ? `${p.color}15` : "#fff", color: pers === k ? p.color : C.mut }}>{p.emoji} {p.label}</button>)}
+        {Object.entries(PERS).map(([k, p]) => <button key={k} className="bb" onClick={() => setPers(k)} style={{ flex: 1, padding: "12px 8px", borderRadius: 12, fontSize: 14, fontWeight: 700, border: pers === k ? `2px solid ${p.color}` : `2px solid ${V.border}`, background: pers === k ? `${p.color}15` : V.inputBg, color: pers === k ? p.color : V.mut, transition: "background-color .3s, border-color .3s, color .3s" }}>{p.emoji} {p.label}</button>)}
       </div>
       <button className="bb" onClick={save} style={{ background: C.pri, color: "#fff", padding: 14, borderRadius: 12, width: "100%", fontWeight: 700, fontFamily: "Outfit", fontSize: 15 }}>Save Changes</button>
     </div>
@@ -774,22 +855,35 @@ function Sett({ user, onUpdate, onLogout }) {
 export default function App() {
   const [user, setUser] = useState(api.getCachedUser());
   const [page, setPage] = useState("dashboard");
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem("ps-theme") === "dark"; } catch { return false; }
+  });
   const loggedIn = api.isLoggedIn() && user;
+
+  const toggleDark = () => {
+    setDarkMode(prev => {
+      const next = !prev;
+      try { localStorage.setItem("ps-theme", next ? "dark" : "light"); } catch {}
+      return next;
+    });
+  };
+
+  const darkClass = darkMode ? "dark-mode" : "";
 
   if (!loggedIn) return <>
     <style>{css}</style>
-    <AuthScreen onAuth={u => setUser(u)} />
+    <AuthScreen onAuth={u => setUser(u)} darkClass={darkClass} />
   </>;
 
   return <>
     <style>{css}</style>
-    <div className="ps">
-      {page === "dashboard" && <Dash user={user} go={setPage} />}
-      {page === "entry" && <Entry onDone={() => setPage("dashboard")} />}
+    <div className={`ps ${darkClass}`}>
+      {page === "dashboard" && <Dash user={user} go={setPage} darkMode={darkMode} toggleDark={toggleDark} />}
+      {page === "entry" && <Entry onDone={() => setPage("dashboard")} darkMode={darkMode} />}
       {page === "goals" && <Goals />}
-      {page === "insights" && <Stats />}
+      {page === "insights" && <Stats darkMode={darkMode} />}
       {page === "history" && <Hist />}
-      {page === "settings" && <Sett user={user} onUpdate={u => setUser(u)} onLogout={() => { api.logout(); setUser(null); }} />}
+      {page === "settings" && <Sett user={user} onUpdate={u => setUser(u)} onLogout={() => { api.logout(); setUser(null); }} darkMode={darkMode} toggleDark={toggleDark} />}
       <Nav active={page} go={setPage} />
     </div>
   </>;
